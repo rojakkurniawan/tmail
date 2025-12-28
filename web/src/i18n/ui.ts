@@ -57,6 +57,31 @@ const ui = {
     confirm: "确认",
     receiveNew: "收到来自 {0} 的新邮件",
   },
+  id: {
+    pageTitle: "Email Sementara - Kotak Surat Anonim Sekali Pakai",
+    pageDesc:
+      "Email Sementara - Kotak surat anonim sekali pakai, melindungi alamat email pribadi Anda dari spam. Mendukung berbagai domain, alamat email dapat disesuaikan, tanpa perlu daftar, langsung pakai 🌟",
+    title: "Email Sementara",
+    copy: "Disalin ke clipboard",
+    edit: "Edit Alamat",
+    editWarn: "Alamat email bersifat publik; gunakan dengan risiko sendiri!",
+    random: "Acak",
+    history: "Riwayat",
+    historyTotal: "Total {0} catatan riwayat",
+    nothing: "Tidak ada apa-apa di sini",
+    clearHistory: "Hapus Riwayat",
+    clearHistoryTip: "Semua catatan riwayat telah dihapus",
+    switchHistory: "Klik untuk beralih",
+    randomNew: "Acak ke alamat baru",
+    changeNew: "Beralih ke alamat baru",
+    realTime: "Mengambil email secara real time",
+    listLoading: "Mengambil email",
+    listEmpty: "Belum ada email yang diterima",
+    mailLoading: "Memuat",
+    cancel: "Batal",
+    confirm: "Konfirmasi",
+    receiveNew: "Menerima email baru dari {0}",
+  },
 }
 
 export type language = keyof typeof ui

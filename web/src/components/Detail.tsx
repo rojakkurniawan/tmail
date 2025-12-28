@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/alert-dialog.tsx"
 import type { Attachment, Envelope } from "@/lib/types.ts"
 import { Button } from "@/components/ui/button.tsx"
-import { Download, Minimize2, Paperclip, RotateCw } from "lucide-react"
+import { Download, X, Paperclip, RotateCw } from "lucide-react"
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 import { fetchError, fmtDate } from "@/lib/utils.ts"
 import { ABORT_SAFE } from "@/lib/constant.ts"
@@ -68,7 +68,7 @@ function Detail({
             className="absolute -top-1 -right-1"
           >
             <Button variant="ghost" size="icon">
-              <Minimize2 />
+              <X />
             </Button>
           </AlertDialogPrimitive.Cancel>
         </AlertDialogHeader>
