@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { ABORT_SAFE } from "@/lib/constant.ts"
 import { toast } from "sonner"
+import { faker } from "@faker-js/faker"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -16,17 +17,22 @@ export function fmtFrom(str: string) {
   return match ? match[1].replace(/^"|"$/g, "") : str
 }
 
-function randomStr(length: number) {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789"
+function randomDigits(): string {
+  const length = Math.floor(Math.random() * 4) + 1
   let result = ""
   for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length))
+    result += Math.floor(Math.random() * 10).toString()
   }
   return result
 }
 
 export function randomAddress(domain: string) {
-  return `${randomStr(8)}@${domain}`
+  const firstName = faker.person.firstName().toLowerCase()
+  const lastName = faker.person.lastName().toLowerCase()
+  const digits = randomDigits()
+  const cleanFirst = firstName.replace(/[^a-z]/g, "")
+  const cleanLast = lastName.replace(/[^a-z]/g, "")
+  return `${cleanFirst}${cleanLast}${digits}@${domain}`
 }
 
 export function fetchError(e: any) {

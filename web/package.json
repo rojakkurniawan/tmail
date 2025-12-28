@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",
+    "@faker-js/faker": "^10.1.0",
     "@nanostores/persistent": "^1.2.0",
     "@nanostores/react": "^1.0.0",
     "@radix-ui/react-alert-dialog": "^1.1.15",
