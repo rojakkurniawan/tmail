@@ -102,29 +102,31 @@ function Content({ lang }: { lang: string }) {
   }
 
   return (
-    <div className="sm:animate-in sm:slide-in-from-right-2/3 flex w-full flex-col pb-4 duration-300">
+    <div className="animate-in fade-in zoom-in-95 flex w-full flex-col pb-4 duration-300">
       <div className="block sm:hidden">
         <Actions lang={lang} />
       </div>
       <div className="relative border-x">
         <div className="animate-fill absolute h-1 bg-green-400" />
-        <div className="flex flex-wrap items-center">
-          <div className="bg-sidebar flex h-12 items-center border-r px-4">
-            <Mounted fallback={<Skeleton className="h-6 w-48" />}>
-              <span className="font-mono font-semibold">{address}</span>
+        <div className="flex items-center">
+          <div className="bg-sidebar flex h-12 flex-1 items-center gap-2 px-3 sm:px-4">
+            <Loader
+              size={16}
+              strokeWidth={2}
+              className="text-muted-foreground shrink-0 animate-spin"
+            />
+            <Mounted fallback={<Skeleton className="h-5 w-52 sm:w-64" />}>
+              <span className="truncate font-mono text-sm font-semibold sm:text-base">
+                {address}
+              </span>
             </Mounted>
           </div>
           <div
             onClick={copyToClipboard}
-            className="hover:bg-sidebar flex items-center self-stretch transition-colors hover:cursor-pointer hover:border-r"
+            className="hover:bg-sidebar flex h-12 items-center border-l px-3 transition-colors hover:cursor-pointer"
           >
-            <ClipboardCopy className="mx-2" size={20} strokeWidth={1.8} />
+            <ClipboardCopy size={18} strokeWidth={1.8} />
           </div>
-          <div className="flex-1" />
-          <div className="text-muted-foreground hidden font-medium sm:inline">
-            {t("realTime")}
-          </div>
-          <Loader size={20} strokeWidth={1.8} className="mx-2 animate-spin" />
         </div>
       </div>
       <div className="min-h-0 divide-y overflow-y-auto rounded-b-sm border">
@@ -147,20 +149,26 @@ function Content({ lang }: { lang: string }) {
           <Detail lang={lang} key={envelope.id} envelope={envelope}>
             <div
               className={clsx(
-                "hover:bg-secondary group text-muted-foreground space-y-1 px-4 py-2 transition-colors duration-300 hover:cursor-pointer",
-                envelope.animate && "animate-in slide-in-from-right"
+                "hover:bg-secondary group text-muted-foreground space-y-1 px-3 py-2 transition-colors duration-300 hover:cursor-pointer sm:px-4",
+                envelope.animate && "animate-in fade-in slide-in-from-top-2"
               )}
             >
-              <div className="flex items-center">
-                <span className="text-foreground">{envelope.subject}</span>
+              <div className="flex items-center gap-1">
+                <span className="text-foreground line-clamp-1 text-sm sm:text-base">
+                  {envelope.subject}
+                </span>
                 <ExternalLink
                   size={16}
-                  className="invisible mx-2 hidden group-hover:visible sm:block"
+                  className="invisible mx-2 hidden shrink-0 group-hover:visible sm:block"
                 />
                 <div className="flex-1" />
-                {envelope.to != address && <span>{envelope.to}</span>}
+                {envelope.to != address && (
+                  <span className="shrink-0 text-xs sm:text-sm">
+                    {envelope.to}
+                  </span>
+                )}
               </div>
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between gap-2 text-xs sm:text-sm">
                 <div className="truncate">{fmtFrom(envelope.from)}</div>
                 <div className="shrink-0">{fmtDate(envelope.created_at)}</div>
               </div>

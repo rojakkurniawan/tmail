@@ -10,8 +10,8 @@ function ToGithub() {
       variant="ghost"
       className="gap-1 underline underline-offset-4 has-[>svg]:px-2"
     >
-      <Github />
-      {VERSION}
+      <Github size={18} />
+      <span className="hidden sm:inline">{VERSION}</span>
     </Button>
   )
 }

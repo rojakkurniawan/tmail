@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/caarlos0/env/v11"
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -12,6 +13,7 @@ type Config struct {
 	BaseDir      string   `env:"BASE_DIR" envDefault:"fs"`
 	DB           Database `envPrefix:"DB_"`
 	Debug        bool     `env:"DEBUG"`
+	SwaggerHost  string   `env:"SWAGGER_HOST"`
 }
 
 type Database struct {
@@ -24,6 +26,9 @@ type Database struct {
 }
 
 func MustNew() *Config {
+	// Load .env file if exists (ignore error if not found)
+	_ = godotenv.Load()
+
 	var cfg Config
 	if err := env.Parse(&cfg); err != nil {
 		panic(err)

@@ -66,23 +66,23 @@ function EditAddress({
   return (
     <AlertDialog onOpenChange={onOpenChange}>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="w-[95vw] max-w-md rounded-lg p-4 sm:w-full sm:p-6">
         <AlertDialogHeader>
-          <AlertDialogTitle>{t("edit")}</AlertDialogTitle>
-          <AlertDialogDescription className="flex items-center justify-center gap-1 sm:justify-start">
-            <MessageCircleWarning size={20} strokeWidth={1.8} />
-            {t("editWarn")}
+          <AlertDialogTitle className="text-base sm:text-lg">{t("edit")}</AlertDialogTitle>
+          <AlertDialogDescription className="flex items-center justify-center gap-1 text-xs sm:justify-start sm:text-sm">
+            <MessageCircleWarning size={18} strokeWidth={1.8} className="shrink-0" />
+            <span>{t("editWarn")}</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="flex items-center justify-center sm:justify-start">
+        <div className="flex flex-wrap items-center justify-center gap-1 sm:justify-start">
           <Input
-            className="w-32 text-right"
+            className="h-9 w-24 text-right text-sm sm:w-32"
             value={address?.split("@")[0]}
             onChange={(e) => onInputChange(e.currentTarget.value)}
           />
-          <span className="bg-secondary mx-1 rounded-sm p-1">@</span>
+          <span className="bg-secondary rounded-sm p-1 text-sm">@</span>
           <Select value={address?.split("@")[1]} onValueChange={onDomainChange}>
-            <SelectTrigger>
+            <SelectTrigger className="h-9 w-auto text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -94,9 +94,9 @@ function EditAddress({
             </SelectContent>
           </Select>
         </div>
-        <AlertDialogFooter>
-          <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>
+        <AlertDialogFooter className="gap-2 sm:gap-0">
+          <AlertDialogCancel className="h-9 text-sm">{t("cancel")}</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm} className="h-9 text-sm">
             {t("confirm")}
           </AlertDialogAction>
         </AlertDialogFooter>

@@ -2,14 +2,17 @@ package internal
 
 import (
 	"fmt"
+	"net/http"
+	"os"
+	"strings"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"net/http"
-	"os"
-	"strings"
+
 	"tmail/config"
+	"tmail/docs"
 	"tmail/ent"
 	"tmail/internal/api"
 	"tmail/internal/constant"
@@ -38,6 +41,11 @@ func (app App) Run() error {
 		zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	}
 
+	// Set Swagger host dynamically for production
+	if cfg.SwaggerHost != "" {
+		docs.SwaggerInfo.Host = cfg.SwaggerHost
+	}
+
 	client, err := ent.New(cfg.DB)
 	if err != nil {
 		return err
@@ -51,6 +59,12 @@ func (app App) Run() error {
 	e.Use(api.Middleware(client, cfg))
 	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
 		DisablePrintStack: true,
+	}))
+	// CORS middleware - allows Swagger UI and other clients to access the API
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 	}))
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
 		e.DefaultHTTPErrorHandler(err, c)

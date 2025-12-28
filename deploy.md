@@ -33,14 +33,22 @@
 - `DB_NAME`: 数据库名称，默认`tmail`
 
 ### 必须
+
 - `DOMAIN_LIST`: 支持的域名列表，使用`,`分割，例如: `isco.eu.org,chato.eu.org`
 
 ### 非必须
-- `ADMIN_ADDRESS`: 管理员邮箱地址，可以查看所有邮件 (默认返回最新100条)
+
+- `ADMIN_ADDRESS`: 管理员邮箱地址，可以查看所有邮件 (默认返回最新 100 条)
 - `HOST`: 服务监听地址，默认为`127.0.0.1`
 - `PORT`: 服务监听端口，默认为`3000`
+- `DEBUG`: 开启调试模式，默认为`false`
+
+### Swagger API 文档
+
+- `SWAGGER_HOST`: Swagger 文档的主机地址，用于生产环境。例如: `mail.example.com`
 
 ### 统计
+
 - `UMAMI_ID`: Umami 统计的 website-id
 - `UMAMI_URL`: Umami 统计的 script.js 地址
 - `UMAMI_DOMAINS`: Umami 统计只在特定域名运行，逗号分割

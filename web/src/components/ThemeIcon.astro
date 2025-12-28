@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button"
 import { MoonStar, Sun } from "lucide-react"
 ---
 
-<Button id="themeToggle" variant="ghost" size="icon">
-  <MoonStar className="dark:hidden" />
-  <Sun className="hidden dark:block" />
+<Button id="themeToggle" variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9">
+  <MoonStar className="dark:hidden size-4 sm:size-[18px]" />
+  <Sun className="hidden dark:block size-4 sm:size-[18px]" />
 </Button>
 
 <script is:inline>

@@ -1,4 +1,4 @@
-export const defaultLang = "zh"
+export const defaultLang = "en"
 
 export function useTranslations(lang: language) {
   return function t(key: keyof (typeof ui)[typeof defaultLang]) {
@@ -24,13 +24,15 @@ const ui = {
     switchHistory: "Click to switch",
     randomNew: "Random to new address",
     changeNew: "Switch to new address",
-    realTime: "Fetching mail in real time",
     listLoading: "Fetching mail",
     listEmpty: "No mail has been received yet",
     mailLoading: "Loading",
     cancel: "Cancel",
     confirm: "Confirm",
     receiveNew: "Received new mail from {0}",
+    randomConfirmTitle: "Random New Address",
+    randomConfirmDesc:
+      "Are you sure you want to generate a new random email address?",
   },
   zh: {
     pageTitle: "临时邮箱 - 匿名的一次性邮箱",
@@ -49,13 +51,14 @@ const ui = {
     switchHistory: "点击切换",
     randomNew: "已随机至新地址",
     changeNew: "已切换至新地址",
-    realTime: "实时获取邮件中",
     listLoading: "正在获取邮件",
     listEmpty: "当前还未收到邮件",
     mailLoading: "加载中",
     cancel: "取消",
     confirm: "确认",
     receiveNew: "收到来自 {0} 的新邮件",
+    randomConfirmTitle: "随机新地址",
+    randomConfirmDesc: "确定要生成新的随机邮箱地址吗？",
   },
   id: {
     pageTitle: "Email Sementara - Kotak Surat Anonim Sekali Pakai",
@@ -74,13 +77,15 @@ const ui = {
     switchHistory: "Klik untuk beralih",
     randomNew: "Acak ke alamat baru",
     changeNew: "Beralih ke alamat baru",
-    realTime: "Mengambil email secara real time",
     listLoading: "Mengambil email",
     listEmpty: "Belum ada email yang diterima",
     mailLoading: "Memuat",
     cancel: "Batal",
     confirm: "Konfirmasi",
     receiveNew: "Menerima email baru dari {0}",
+    randomConfirmTitle: "Acak Alamat Baru",
+    randomConfirmDesc:
+      "Apakah Anda yakin ingin membuat alamat email acak baru?",
   },
 }
 

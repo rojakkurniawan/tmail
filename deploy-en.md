@@ -33,14 +33,22 @@ After creation, click `Code editor` to edit the code, paste the code from [here]
 - `DB_NAME`: Database name, default is `tmail`
 
 ### Required
+
 - `DOMAIN_LIST`: List of supported domains, separated by `,`, for example: `isco.eu.org,chato.eu.org`
 
 ### Optional
+
 - `ADMIN_ADDRESS`: Administrator email address, can view all emails (default returns latest 100)
 - `HOST`: Service listening address, default is `127.0.0.1`
 - `PORT`: Service listening port, default is `3000`
+- `DEBUG`: Enable debug mode, default is `false`
+
+### Swagger API Documentation
+
+- `SWAGGER_HOST`: Swagger documentation host for production. Example: `mail.example.com`
 
 ### Analytics
+
 - `UMAMI_ID`: Umami analytics website-id
 - `UMAMI_URL`: Umami analytics script.js URL
 - `UMAMI_DOMAINS`: Umami analytics only runs on specific domains, comma-separated
@@ -88,4 +96,3 @@ mail.example.com {
 	reverse_proxy 127.0.0.1:3000
 }
 ```
-

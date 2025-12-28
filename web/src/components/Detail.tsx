@@ -57,20 +57,20 @@ function Detail({
     <AlertDialog onOpenChange={onOpenChange}>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent className="flex max-h-full flex-col sm:max-w-4xl">
-        <AlertDialogHeader className="relative">
-          <AlertDialogTitle>{envelope.subject}</AlertDialogTitle>
-          <AlertDialogDescription className="flex flex-col justify-between sm:flex-row">
-            <span>{envelope.from}</span>
-            <span>{fmtDate(envelope.created_at)}</span>
-          </AlertDialogDescription>
+        <AlertDialogHeader className="relative pr-10">
           <AlertDialogPrimitive.Cancel
             asChild
-            className="absolute -top-1 -right-1"
+            className="absolute -top-1 right-0"
           >
             <Button variant="ghost" size="icon">
               <X />
             </Button>
           </AlertDialogPrimitive.Cancel>
+          <AlertDialogTitle>{envelope.subject}</AlertDialogTitle>
+          <AlertDialogDescription className="flex flex-col justify-between sm:flex-row">
+            <span>{envelope.from}</span>
+            <span>{fmtDate(envelope.created_at)}</span>
+          </AlertDialogDescription>
         </AlertDialogHeader>
         {attachments.length > 0 && (
           <div className="flex flex-wrap gap-1">
@@ -94,7 +94,7 @@ function Detail({
           {loading && (
             <div className="text-muted-foreground flex h-6.5 items-center justify-center gap-1">
               <RotateCw className="animate-spin" size={18} />
-              <span className="">{t("mailLoading")}</span>
+              <span>{t("mailLoading")}</span>
             </div>
           )}
         </div>

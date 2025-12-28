@@ -10,6 +10,16 @@ import (
 	"tmail/internal/pubsub"
 )
 
+// Fetch godoc
+// @Summary Fetch emails
+// @Description Fetch all emails for a specific address. If the address is the admin address, returns the latest 100 emails from all addresses.
+// @Tags Email
+// @Accept json
+// @Produce json
+// @Param to query string true "Email address to fetch emails for"
+// @Success 200 {array} ent.Envelope "List of emails"
+// @Failure 400 {object} ErrorResponse "Bad request"
+// @Router /fetch [get]
 func Fetch(ctx *Context) error {
 	to := ctx.QueryParam("to")
 	if to == "" {
@@ -41,6 +51,16 @@ type AttachmentDetail struct {
 	Filename string `json:"filename"`
 }
 
+// FetchDetail godoc
+// @Summary Fetch email detail
+// @Description Get the full content and attachments of a specific email
+// @Tags Email
+// @Accept json
+// @Produce json
+// @Param id path int true "Email ID"
+// @Success 200 {object} MailDetail "Email detail with content and attachments"
+// @Failure 400 {object} ErrorResponse "Bad request or email not found"
+// @Router /fetch/{id} [get]
 func FetchDetail(ctx *Context) error {
 	idStr := ctx.Param("id")
 	if idStr == "" {
@@ -75,6 +95,18 @@ func FetchDetail(ctx *Context) error {
 	})
 }
 
+// FetchLatest godoc
+// @Summary Long polling for new emails
+// @Description Long polling endpoint to wait for new emails. Returns immediately if there's a new email with ID greater than the provided ID. Otherwise, waits up to 60 seconds for a new email.
+// @Tags Email
+// @Accept json
+// @Produce json
+// @Param to query string true "Email address to watch for new emails"
+// @Param id query int true "Last known email ID (returns emails newer than this)"
+// @Success 200 {object} ent.Envelope "New email received"
+// @Success 204 "No new email within timeout period"
+// @Failure 400 {object} ErrorResponse "Bad request"
+// @Router /fetch/latest [get]
 func FetchLatest(ctx *Context) error {
 	to := ctx.QueryParam("to")
 	if to == "" {
@@ -114,6 +146,15 @@ func FetchLatest(ctx *Context) error {
 	}
 }
 
+// Download godoc
+// @Summary Download attachment
+// @Description Download an email attachment by its ID
+// @Tags Email
+// @Produce octet-stream
+// @Param id path string true "Attachment ID"
+// @Success 200 {file} binary "Attachment file"
+// @Failure 400 {object} ErrorResponse "Attachment not found"
+// @Router /download/{id} [get]
 func Download(ctx *Context) error {
 	id := ctx.Param("id")
 	if id == "" {

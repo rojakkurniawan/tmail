@@ -1,8 +1,10 @@
 package route
 
 import (
-	"github.com/labstack/echo/v4"
 	"tmail/internal/api"
+
+	"github.com/labstack/echo/v4"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 func Register(e *echo.Echo) {
@@ -13,4 +15,7 @@ func Register(e *echo.Echo) {
 	g.GET("/fetch/latest", api.Wrap(api.FetchLatest))
 	g.GET("/download/:id", api.Wrap(api.Download))
 	g.GET("/domain", api.Wrap(api.DomainList))
+
+	// Swagger API Documentation
+	g.GET("/docs/*", echoSwagger.WrapHandler)
 }

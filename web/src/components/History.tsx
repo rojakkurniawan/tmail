@@ -79,7 +79,7 @@ function History({
               <AlertDialogPrimitive.Cancel asChild onClick={() => onSwitch(v)}>
                 <div className="group bg-sidebar text-muted-foreground hover:text-foreground hover:bg-secondary flex flex-1 items-center rounded-sm border px-3 py-2 transition-colors hover:cursor-pointer">
                   <Mail size={16} className="mr-2" />
-                  {v}
+                  <span className="truncate">{v}</span>
                   <div className="flex-1" />
                   <div className="hidden items-center gap-2 group-hover:flex">
                     <span className="text-sm">{t("switchHistory")}</span>

@@ -2,16 +2,23 @@ package api
 
 import (
 	"fmt"
-	"github.com/labstack/echo/v4"
 	"net/http"
+
 	"tmail/config"
 	"tmail/ent"
+
+	"github.com/labstack/echo/v4"
 )
 
 type Context struct {
 	echo.Context
 	*config.Config
 	ent *ent.Client
+}
+
+// ErrorResponse represents an error response
+type ErrorResponse struct {
+	Message string `json:"message" example:"error message"`
 }
 
 func Middleware(client *ent.Client, cfg *config.Config) echo.MiddlewareFunc {
