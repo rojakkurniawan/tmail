@@ -1,7 +1,7 @@
 import React from "react"
 import { GITHUB_URL, VERSION } from "@/lib/constant.ts"
 import { Button } from "@/components/ui/button.tsx"
-import { Github } from "lucide-react"
+import { FaGithub } from "react-icons/fa"
 
 function ToGithub() {
   return (
@@ -10,7 +10,7 @@ function ToGithub() {
       variant="ghost"
       className="gap-1 underline underline-offset-4 has-[>svg]:px-2"
     >
-      <Github size={18} />
+      <FaGithub size={18} />
       <span className="hidden sm:inline">{VERSION}</span>
     </Button>
   )

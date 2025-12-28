@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input.tsx"
 import { useStore } from "@nanostores/react"
 import { $address, $domainList, updateAddress } from "@/lib/store/store.ts"
 import { toast } from "sonner"
-import { MessageCircleWarning } from "lucide-react"
+import { HiOutlineExclamationCircle } from "react-icons/hi"
 import { type language, useTranslations } from "@/i18n/ui"
 
 function EditAddress({
@@ -43,8 +43,8 @@ function EditAddress({
 
   function onInputChange(value: string) {
     value = value.replace(/[^a-zA-Z0-9-_.]/g, "")
-    if (value.length > 12) {
-      value = value.slice(0, 12)
+    if (value.length > 64) {
+      value = value.slice(0, 64)
     }
     setAddress(`${value}@${address!.split("@")[1]}`)
   }
@@ -68,21 +68,27 @@ function EditAddress({
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent className="w-[95vw] max-w-md rounded-lg p-4 sm:w-full sm:p-6">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-base sm:text-lg">{t("edit")}</AlertDialogTitle>
+          <AlertDialogTitle className="text-base sm:text-lg">
+            {t("edit")}
+          </AlertDialogTitle>
           <AlertDialogDescription className="flex items-center justify-center gap-1 text-xs sm:justify-start sm:text-sm">
-            <MessageCircleWarning size={18} strokeWidth={1.8} className="shrink-0" />
+            <HiOutlineExclamationCircle size={18} className="shrink-0" />
             <span>{t("editWarn")}</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="flex flex-wrap items-center justify-center gap-1 sm:justify-start">
+        <div className="flex flex-wrap items-center gap-2">
           <Input
-            className="h-9 w-24 text-right text-sm sm:w-32"
+            className="h-9 min-w-[120px] flex-1 text-right font-mono text-sm sm:min-w-[200px]"
             value={address?.split("@")[0]}
             onChange={(e) => onInputChange(e.currentTarget.value)}
+            maxLength={64}
+            placeholder="username"
           />
-          <span className="bg-secondary rounded-sm p-1 text-sm">@</span>
+          <span className="bg-secondary flex h-9 shrink-0 items-center justify-center rounded-sm px-2 text-sm font-semibold">
+            @
+          </span>
           <Select value={address?.split("@")[1]} onValueChange={onDomainChange}>
-            <SelectTrigger className="h-9 w-auto text-sm">
+            <SelectTrigger className="h-9 min-w-[120px] text-sm sm:min-w-[150px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -95,7 +101,9 @@ function EditAddress({
           </Select>
         </div>
         <AlertDialogFooter className="gap-2 sm:gap-0">
-          <AlertDialogCancel className="h-9 text-sm">{t("cancel")}</AlertDialogCancel>
+          <AlertDialogCancel className="h-9 text-sm">
+            {t("cancel")}
+          </AlertDialogCancel>
           <AlertDialogAction onClick={onConfirm} className="h-9 text-sm">
             {t("confirm")}
           </AlertDialogAction>

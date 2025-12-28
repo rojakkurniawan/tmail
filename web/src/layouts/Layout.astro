@@ -19,16 +19,7 @@ import "@/style/global.css"
     <meta name="apple-mobile-web-app-title" content="Tmail" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta
-      name="theme-color"
-      media="(prefers-color-scheme: light)"
-      content="#FAFAFA"
-    />
-    <meta
-      name="theme-color"
-      media="(prefers-color-scheme: dark)"
-      content="#18181B"
-    />
+    <meta name="theme-color" id="theme-color-meta" content="#FAFAFA" />
     <link
       rel="apple-touch-icon"
       href="/apple-touch-icon.png"
@@ -46,7 +37,7 @@ import "@/style/global.css"
   <body class="flex flex-col">
     <slot />
     <Umami />
-    <Toaster position="top-right" richColors={true} client:load />
+    <Toaster position="bottom-right" richColors={true} client:load />
   </body>
 </html>
 
@@ -68,4 +59,23 @@ import "@/style/global.css"
   document.documentElement.classList[theme === "dark" ? "add" : "remove"](
     "dark"
   )
+  
+  // Update theme-color meta tag for mobile
+  const themeColorMeta = document.getElementById("theme-color-meta")
+  if (themeColorMeta) {
+    themeColorMeta.content = theme === "dark" ? "#18181B" : "#FAFAFA"
+  }
+  
+  // Watch for theme changes
+  const observer = new MutationObserver(() => {
+    const isDark = document.documentElement.classList.contains("dark")
+    if (themeColorMeta) {
+      themeColorMeta.content = isDark ? "#18181B" : "#FAFAFA"
+    }
+  })
+  
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"]
+  })
 </script>

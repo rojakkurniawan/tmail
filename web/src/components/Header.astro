@@ -3,20 +3,20 @@ import { useTranslations, type language } from "@/i18n/ui"
 import ToGithub from "@/components/ToGithub"
 import ToApiDocs from "@/components/ToApiDocs"
 import LanguageSwitcher from "@/components/LanguageSwitcher"
-import ThemeIcon from "./ThemeIcon.astro"
+import ThemeIcon from "./ThemeIcon"
 
 const { lang } = Astro.props
 const t = useTranslations(lang as language)
 ---
 
-<header class="bg-sidebar border-b py-3 shadow-2xs">
-  <div class="mx-auto flex w-[95%] max-w-4xl items-center gap-1 px-2 sm:w-[90%] sm:px-4">
+<header class="bg-sidebar border-b py-3 shadow-2xs shrink-0">
+  <div class="mx-auto flex w-[95%] items-center gap-1 px-2 sm:w-[90%] sm:px-4">
     <img alt="logo" src="/favicon.svg" class="h-6" />
     <span class="mx-1 font-semibold">{t("title")}</span>
     <div class="flex-1"></div>
     <LanguageSwitcher currentLang={lang} client:load />
     <ToApiDocs client:load />
-    <ThemeIcon />
+    <ThemeIcon client:load />
     <ToGithub client:load />
   </div>
 </header>

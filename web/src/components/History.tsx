@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/alert-dialog.tsx"
 import { $history, updateAddress } from "@/lib/store/store.ts"
 import { toast } from "sonner"
-import { CircleArrowRight, Frown, Mail, Trash } from "lucide-react"
+import { HiOutlineMail, HiOutlineTrash } from "react-icons/hi"
+import { MdOutlineSentimentDissatisfied, MdOutlineArrowForward } from "react-icons/md"
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 import { Button } from "@/components/ui/button.tsx"
 import { clsx } from "clsx"
@@ -64,31 +65,30 @@ function History({
         <div className="flex max-h-96 flex-col gap-2 overflow-y-auto">
           {history.length == 0 && (
             <div className="bg-secondary text-muted-foreground flex items-center gap-1 rounded-sm px-3 py-2">
-              <Frown size={20} />
+              <MdOutlineSentimentDissatisfied size={20} />
               {t("nothing")}
             </div>
           )}
           {history.map((v, i) => (
             <div
               className={clsx(
-                "flex items-center gap-1",
+                "flex min-w-0 items-center gap-1",
                 history.length >= 8 && "mr-0.5"
               )}
               key={v}
             >
               <AlertDialogPrimitive.Cancel asChild onClick={() => onSwitch(v)}>
-                <div className="group bg-sidebar text-muted-foreground hover:text-foreground hover:bg-secondary flex flex-1 items-center rounded-sm border px-3 py-2 transition-colors hover:cursor-pointer">
-                  <Mail size={16} className="mr-2" />
-                  <span className="truncate">{v}</span>
-                  <div className="flex-1" />
-                  <div className="hidden items-center gap-2 group-hover:flex">
-                    <span className="text-sm">{t("switchHistory")}</span>
-                    <CircleArrowRight strokeWidth={1.8} size={18} />
+                <div className="group bg-sidebar text-muted-foreground hover:text-foreground hover:bg-secondary flex min-w-0 flex-1 items-center rounded-sm border px-3 py-2 transition-colors hover:cursor-pointer">
+                  <HiOutlineMail size={16} className="mr-2 shrink-0" />
+                  <span className="min-w-0 flex-1 truncate text-sm font-mono">{v}</span>
+                  <div className="hidden shrink-0 items-center gap-2 group-hover:flex">
+                    <span className="text-xs sm:text-sm whitespace-nowrap">{t("switchHistory")}</span>
+                    <MdOutlineArrowForward size={18} />
                   </div>
                 </div>
               </AlertDialogPrimitive.Cancel>
-              <Button variant="ghost" size="icon" onClick={() => onDelete(i)}>
-                <Trash />
+              <Button variant="ghost" size="icon" onClick={() => onDelete(i)} className="shrink-0">
+                <HiOutlineTrash />
               </Button>
             </div>
           ))}

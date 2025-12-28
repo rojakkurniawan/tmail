@@ -1,5 +1,5 @@
 import React from "react"
-import { Globe } from "lucide-react"
+import { HiOutlineGlobeAlt } from "react-icons/hi"
 import {
   Select,
   SelectContent,
@@ -28,7 +28,7 @@ function LanguageSwitcher({ currentLang }: Props) {
   return (
     <Select value={currentLang} onValueChange={handleChange}>
       <SelectTrigger className="hover:bg-accent h-9 w-auto gap-1.5 border-none bg-transparent px-2 shadow-none">
-        <Globe size={18} className="shrink-0" />
+        <HiOutlineGlobeAlt size={18} className="shrink-0" />
         <SelectValue>
           <span className="hidden sm:inline">
             {languageLabels[currentLang]}

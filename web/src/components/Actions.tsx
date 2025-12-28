@@ -1,6 +1,7 @@
 import React, { useMemo } from "react"
 import { Button } from "@/components/ui/button.tsx"
-import { Dices, FilePenLine, GalleryVerticalEnd } from "lucide-react"
+import { HiOutlinePencil, HiOutlineCollection } from "react-icons/hi"
+import { FaDice } from "react-icons/fa"
 import { $address, $domainList, updateAddress } from "@/lib/store/store.ts"
 import { randomAddress } from "@/lib/utils.ts"
 import { toast } from "sonner"
@@ -40,14 +41,14 @@ function Actions({ lang, className }: { lang: string; className?: string }) {
     >
       <EditAddress lang={lang}>
         <Button className="h-9 gap-1.5 px-3 text-sm">
-          <FilePenLine className="size-4" />
+          <HiOutlinePencil className="size-4" />
           {t("edit")}
         </Button>
       </EditAddress>
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button variant="outline" className="h-9 gap-1.5 px-3 text-sm">
-            <Dices className="size-4" />
+            <FaDice className="size-4" />
             {t("random")}
           </Button>
         </AlertDialogTrigger>
@@ -68,7 +69,7 @@ function Actions({ lang, className }: { lang: string; className?: string }) {
       </AlertDialog>
       <History lang={lang}>
         <Button variant="outline" className="h-9 gap-1.5 px-3 text-sm">
-          <GalleryVerticalEnd className="size-4" />
+          <HiOutlineCollection className="size-4" />
           {t("history")}
         </Button>
       </History>

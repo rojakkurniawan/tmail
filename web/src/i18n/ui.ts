@@ -33,6 +33,12 @@ const ui = {
     randomConfirmTitle: "Random New Address",
     randomConfirmDesc:
       "Are you sure you want to generate a new random email address?",
+    selectEmail: "Select an email to view details",
+    back: "Back",
+    close: "Close",
+    from: "From",
+    to: "To",
+    date: "Date",
   },
   zh: {
     pageTitle: "临时邮箱 - 匿名的一次性邮箱",
@@ -59,6 +65,12 @@ const ui = {
     receiveNew: "收到来自 {0} 的新邮件",
     randomConfirmTitle: "随机新地址",
     randomConfirmDesc: "确定要生成新的随机邮箱地址吗？",
+    selectEmail: "选择邮件以查看详情",
+    back: "返回",
+    close: "关闭",
+    from: "发件人",
+    to: "收件人",
+    date: "日期",
   },
   id: {
     pageTitle: "Email Sementara - Kotak Surat Anonim Sekali Pakai",
@@ -86,6 +98,12 @@ const ui = {
     randomConfirmTitle: "Acak Alamat Baru",
     randomConfirmDesc:
       "Apakah Anda yakin ingin membuat alamat email acak baru?",
+    selectEmail: "Pilih email untuk melihat detail",
+    back: "Kembali",
+    close: "Tutup",
+    from: "Dari",
+    to: "Kepada",
+    date: "Tanggal",
   },
 }
 
