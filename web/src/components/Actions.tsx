@@ -1,7 +1,7 @@
 import React, { useMemo } from "react"
 import { Button } from "@/components/ui/button.tsx"
 import { HiOutlinePencil, HiOutlineCollection } from "react-icons/hi"
-import { FaDice } from "react-icons/fa"
+import { FiRefreshCw } from "react-icons/fi"
 import { $address, $domainList, updateAddress } from "@/lib/store/store.ts"
 import { randomAddress } from "@/lib/utils.ts"
 import { toast } from "sonner"
@@ -25,9 +25,15 @@ function Actions({ lang, className }: { lang: string; className?: string }) {
   const t = useMemo(() => useTranslations(lang as language), [])
 
   function onRandom() {
-    const address = $address.get()
-    const domain = address ? address.split("@")[1] : $domainList.get()[0]
-    const newAddress = randomAddress(domain)
+    const domainList = $domainList.get()
+    if (domainList.length === 0) {
+      toast.error("No domain available")
+      return
+    }
+    // Random domain selection
+    const randomDomain =
+      domainList[Math.floor(Math.random() * domainList.length)]
+    const newAddress = randomAddress(randomDomain)
     updateAddress(newAddress)
     toast.success(t("randomNew") + " " + newAddress)
   }
@@ -48,7 +54,7 @@ function Actions({ lang, className }: { lang: string; className?: string }) {
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button variant="outline" className="h-9 gap-1.5 px-3 text-sm">
-            <FaDice className="size-4" />
+            <FiRefreshCw className="size-4" />
             {t("random")}
           </Button>
         </AlertDialogTrigger>

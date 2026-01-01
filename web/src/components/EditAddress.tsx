@@ -19,10 +19,13 @@ import {
 } from "@/components/ui/select"
 
 import { Input } from "@/components/ui/input.tsx"
+import { Button } from "@/components/ui/button.tsx"
 import { useStore } from "@nanostores/react"
 import { $address, $domainList, updateAddress } from "@/lib/store/store.ts"
+import { randomAddress } from "@/lib/utils.ts"
 import { toast } from "sonner"
 import { HiOutlineExclamationCircle } from "react-icons/hi"
+import { FiRefreshCw } from "react-icons/fi"
 import { type language, useTranslations } from "@/i18n/ui"
 
 function EditAddress({
@@ -63,6 +66,18 @@ function EditAddress({
     toast.success(t("changeNew") + " " + address)
   }
 
+  function onRandom() {
+    if (domainList.length === 0) {
+      toast.error("No domain available")
+      return
+    }
+    // Random domain selection
+    const randomDomain =
+      domainList[Math.floor(Math.random() * domainList.length)]
+    const newAddress = randomAddress(randomDomain)
+    setAddress(newAddress)
+  }
+
   return (
     <AlertDialog onOpenChange={onOpenChange}>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
@@ -76,7 +91,7 @@ function EditAddress({
             <span>{t("editWarn")}</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-2 overflow-hidden">
           <Input
             className="h-9 min-w-[120px] flex-1 text-right font-mono text-sm sm:min-w-[200px]"
             value={address?.split("@")[0]}
@@ -88,7 +103,7 @@ function EditAddress({
             @
           </span>
           <Select value={address?.split("@")[1]} onValueChange={onDomainChange}>
-            <SelectTrigger className="h-9 min-w-[120px] text-sm sm:min-w-[150px]">
+            <SelectTrigger className="h-9 max-w-[200px] min-w-[120px] flex-1 text-sm sm:max-w-[300px] sm:min-w-[150px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -99,6 +114,15 @@ function EditAddress({
               ))}
             </SelectContent>
           </Select>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-9 gap-1.5 px-3 text-sm"
+            onClick={onRandom}
+            title={t("random")}
+          >
+            <FiRefreshCw className="size-4" />
+          </Button>
         </div>
         <AlertDialogFooter className="gap-2 sm:gap-0">
           <AlertDialogCancel className="h-9 text-sm">

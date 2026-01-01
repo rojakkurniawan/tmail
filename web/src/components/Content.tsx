@@ -1,9 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
 import { HiOutlineClipboardCopy, HiOutlineMail } from "react-icons/hi"
-import {
-  MdOutlineArrowBack,
-  MdOutlineSentimentDissatisfied,
-} from "react-icons/md"
+import { MdOutlineSentimentDissatisfied } from "react-icons/md"
 import { AiOutlineLoading3Quarters } from "react-icons/ai"
 import { FiRotateCw } from "react-icons/fi"
 import Actions from "@/components/Actions.tsx"
