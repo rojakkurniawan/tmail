@@ -5,7 +5,12 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai"
 import { FiRotateCw } from "react-icons/fi"
 import Actions from "@/components/Actions.tsx"
 import type { Envelope } from "@/lib/types.ts"
-import { fetchError, fmtDate, fmtFrom, fmtString } from "@/lib/utils.ts"
+import {
+  fetchError,
+  fmtDate,
+  fmtFromWithEmail,
+  fmtString,
+} from "@/lib/utils.ts"
 import { toast } from "sonner"
 import { useStore } from "@nanostores/react"
 import { $address, initStore } from "@/lib/store/store.ts"
@@ -345,7 +350,7 @@ function Content({ lang }: { lang: string }) {
               </div>
               <div className="text-muted-foreground flex min-w-0 justify-between gap-2 text-xs sm:text-sm">
                 <div className="min-w-0 flex-1 truncate">
-                  {fmtFrom(envelope.from)}
+                  {fmtFromWithEmail(envelope.from)}
                 </div>
                 <div className="shrink-0">{fmtDate(envelope.created_at)}</div>
               </div>

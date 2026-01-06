@@ -12,9 +12,14 @@ export function fmtDate(str: string) {
   return new Date(str).toLocaleString()
 }
 
-export function fmtFrom(str: string) {
+export function fmtFromWithEmail(str: string) {
   const match = str.match(/^(.+?)\s*<(.+?)>$/)
-  return match ? match[1].replace(/^"|"$/g, "") : str
+  if (match) {
+    const name = match[1].replace(/^"|"$/g, "")
+    const email = match[2]
+    return `${name} <${email}>`
+  }
+  return str
 }
 
 function randomDigits(): string {
