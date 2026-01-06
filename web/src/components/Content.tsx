@@ -22,7 +22,6 @@ import { type language, useTranslations } from "@/i18n/ui.ts"
 import { clsx } from "clsx"
 
 function Content({ lang }: { lang: string }) {
-  const [latestId, setLatestId] = useState(-1)
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
   const [envelopes, setEnvelopes] = useState<Envelope[]>([])
@@ -30,9 +29,8 @@ function Content({ lang }: { lang: string }) {
   const [hasMore, setHasMore] = useState(true)
   const [offset, setOffset] = useState(0)
   const controller = useRef<AbortController>(null)
-  const retryCount = useRef(0)
-  const isPollingActive = useRef(true)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const latestIdRef = useRef(0) // Track latest email ID for polling
 
   const address = useStore($address)
 
@@ -45,46 +43,39 @@ function Content({ lang }: { lang: string }) {
       .catch(fetchError)
 
     return () => {
-      isPollingActive.current = false
       controller.current?.abort(ABORT_SAFE)
     }
   }, [])
 
   useEffect(() => {
-    if (latestId < 0 || !address) {
-      return
-    }
-
-    // Start polling when latestId is set
-    if (isPollingActive.current) {
-      fetchLatest().catch(() => {
-        // Error handling is done inside fetchLatest
-      })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [latestId])
-
-  useEffect(() => {
     if (!address) {
       return
     }
+
+    // Stop previous polling
     controller.current?.abort(ABORT_SAFE)
     controller.current = new AbortController()
-    retryCount.current = 0
-    isPollingActive.current = true
 
+    // Reset state
     setLoading(true)
     setEnvelopes([])
-    setSelectedEmail(null) // Reset selected email when address changes
-    setLatestId(-1)
+    setSelectedEmail(null)
+    latestIdRef.current = 0
     setOffset(0)
     setHasMore(true)
+
+    // Fetch initial emails and start long polling after it completes
     fetchAll()
+      .then(() => {
+        // Start long polling after initial load completes
+        // Long polling is more efficient - server holds connection until new email arrives
+        fetchLatestLongPoll()
+      })
       .catch(fetchError)
       .finally(() => setLoading(false))
 
     return () => {
-      isPollingActive.current = false
+      controller.current?.abort(ABORT_SAFE)
     }
   }, [address])
 
@@ -100,7 +91,7 @@ function Content({ lang }: { lang: string }) {
     setEnvelopes(list)
     setOffset(list.length)
     setHasMore(list.length === 50)
-    setLatestId(list.length > 0 ? list[0].id : 0)
+    latestIdRef.current = list.length > 0 ? list[0].id : 0
   }
 
   const fetchMore = useCallback(async () => {
@@ -161,101 +152,70 @@ function Content({ lang }: { lang: string }) {
     return () => container.removeEventListener("scroll", handleScroll)
   }, [address, hasMore, loadingMore, fetchMore])
 
-  async function fetchLatest() {
-    if (!isPollingActive.current || !address) {
+  async function fetchLatestLongPoll() {
+    if (!address) {
       return
     }
 
     try {
-      // Create new AbortController for this request
-      controller.current = new AbortController()
-
       const res = await fetch(
-        `/api/fetch/latest?to=${address}&id=${latestId}`,
+        `/api/fetch/latest?to=${address}&id=${latestIdRef.current}`,
         {
-          signal: controller.current.signal,
+          signal: controller.current?.signal,
         }
       )
 
-      if (!res.ok) {
-        // Reset retry count on successful connection (even if error response)
-        retryCount.current = 0
-
-        try {
-          const errorData = await res.json()
-          // Only show error toast for client errors (4xx), not server errors (5xx)
-          if (res.status >= 400 && res.status < 500) {
-            toast.error(errorData.message || "Request failed")
-          }
-        } catch {
-          // If response is not JSON, ignore
-        }
-
-        // Retry after 1 second
-        setTimeout(() => {
-          if (isPollingActive.current && address) {
-            fetchLatest().catch(() => {
-              // Error already handled in recursive call
-            })
-          }
-        }, 1000)
+      if (res.status === 204) {
+        // No new email (timeout after 1 minute), immediately start next long poll
+        fetchLatestLongPoll()
         return
       }
 
-      // Reset retry count on success
-      retryCount.current = 0
-
-      if (res.status === 204) {
-        // No new email, continue polling immediately
-        setTimeout(() => {
-          if (isPollingActive.current && address) {
-            fetchLatest().catch(() => {
-              // Error already handled in recursive call
-            })
+      if (!res.ok) {
+        // Only show error for client errors (4xx)
+        if (res.status >= 400 && res.status < 500) {
+          try {
+            const errorData = await res.json()
+            toast.error(errorData.message || "Request failed")
+          } catch {
+            // Ignore JSON parse errors
           }
-        }, 100)
+        }
+        // Retry after 2 seconds on error
+        setTimeout(() => {
+          if (address) {
+            fetchLatestLongPoll()
+          }
+        }, 2000)
         return
       }
 
       const e = await res.json()
-      e.animate = true
-      setEnvelopes((prev) => [e, ...prev])
-      setLatestId(e.id)
-      toast.success(fmtString(t("receiveNew"), e.from))
 
-      // Continue polling for next email
-      setTimeout(() => {
-        if (isPollingActive.current && address) {
-          fetchLatest().catch(() => {
-            // Error already handled in recursive call
-          })
+      // Check if email already exists to prevent duplicates
+      setEnvelopes((prev) => {
+        if (prev.some((env) => env.id === e.id)) {
+          return prev
         }
-      }, 100)
+        e.animate = true
+        latestIdRef.current = e.id
+        toast.success(fmtString(t("receiveNew"), e.from))
+        return [e, ...prev]
+      })
+
+      // Immediately start next long poll after receiving email
+      fetchLatestLongPoll()
     } catch (error: any) {
-      // Handle network errors, timeouts, and abort errors
+      // Ignore abort errors
       if (error === ABORT_SAFE || error.name === "AbortError") {
         return
       }
-
-      // Increment retry count
-      retryCount.current += 1
-
-      // Exponential backoff: 1s, 2s, 4s, 8s, max 30s
-      const delay = Math.min(1000 * Math.pow(2, retryCount.current - 1), 30000)
-
-      // Only show error toast after multiple retries
-      if (retryCount.current === 3) {
-        toast.error("Connection lost. Retrying...")
-      }
-
-      // Retry with exponential backoff
+      // Retry after 2 seconds on network error
       setTimeout(() => {
-        if (isPollingActive.current && address) {
-          fetchLatest().catch(() => {
-            // Error already handled in recursive call
-          })
+        if (address) {
+          fetchLatestLongPoll()
         }
-      }, delay)
+      }, 2000)
     }
   }
 
