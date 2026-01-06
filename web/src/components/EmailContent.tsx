@@ -32,6 +32,28 @@ function isHtmlEmail(body: string): boolean {
   return htmlIndicators.some((indicator) => body.includes(indicator))
 }
 
+function hasFullHtmlStructure(body: string): boolean {
+  const trimmed = body.trim()
+  return (
+    (trimmed.includes("<html") || trimmed.includes("<HTML")) &&
+    (trimmed.includes("</html>") || trimmed.includes("</HTML>"))
+  )
+}
+
+function extractBodyContent(html: string): string {
+  // Extract content from <body> tag if exists
+  const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i)
+  if (bodyMatch) {
+    return bodyMatch[1]
+  }
+  // If no body tag, try to extract from html tag
+  const htmlMatch = html.match(/<html[^>]*>([\s\S]*?)<\/html>/i)
+  if (htmlMatch) {
+    return htmlMatch[1]
+  }
+  return html
+}
+
 function escapeHtml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
@@ -62,58 +84,159 @@ export function EmailContent({ body }: EmailContentProps) {
     const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document
     if (!iframeDoc) return
 
-    iframeDoc.open()
-    iframeDoc.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-          * {
-            box-sizing: border-box;
-          }
-          body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            font-size: 14px;
-            line-height: 1.6;
-            color: #333;
-            padding: 16px;
-            margin: 0;
-            background: transparent;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-          }
-          img { 
-            max-width: 100%; 
-            height: auto;
-            display: block;
-          }
-          table { 
-            max-width: 100%; 
-            border-collapse: collapse;
-            table-layout: fixed;
-          }
-          td, th {
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-          }
-          a { color: #4f46e5; }
-          a:hover { text-decoration: underline; }
-          pre, code {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            max-width: 100%;
-          }
-        </style>
-      </head>
-      <body>
-        ${body}
-      </body>
-      </html>
-    `)
-    iframeDoc.close()
+    // Determine if we need to wrap the content or use it as-is
+    const hasFullStructure = hasFullHtmlStructure(body)
+    let emailContent = body
+
+    if (hasFullStructure) {
+      // Extract body content if full HTML structure exists
+      emailContent = extractBodyContent(body)
+    }
+
+    // Prepare the HTML document
+    let htmlContent = ""
+
+    if (hasFullStructure) {
+      // If original has full structure, preserve its head styles but wrap body content
+      const headMatch = body.match(/<head[^>]*>([\s\S]*?)<\/head>/i)
+      const originalStyles = headMatch ? headMatch[1] : ""
+
+      htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          ${originalStyles}
+          <style>
+            * {
+              box-sizing: border-box;
+            }
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+              font-size: 14px;
+              line-height: 1.6;
+              color: #333;
+              padding: 16px;
+              margin: 0;
+              background: transparent;
+              word-wrap: break-word;
+              overflow-wrap: break-word;
+            }
+            img { 
+              max-width: 100% !important; 
+              height: auto !important;
+              display: block;
+            }
+            table { 
+              max-width: 100% !important; 
+              border-collapse: collapse;
+              table-layout: fixed;
+              width: 100% !important;
+            }
+            td, th {
+              word-wrap: break-word;
+              overflow-wrap: break-word;
+            }
+            a { 
+              color: #4f46e5; 
+              text-decoration: none;
+            }
+            a:hover { 
+              text-decoration: underline; 
+            }
+            pre, code {
+              white-space: pre-wrap;
+              word-wrap: break-word;
+              overflow-wrap: break-word;
+              max-width: 100%;
+            }
+            /* Override any fixed widths that might break layout */
+            div, p, span {
+              max-width: 100% !important;
+            }
+            /* Fix for common email client styles */
+            .ExternalClass, .ReadMsgBody {
+              width: 100%;
+            }
+          </style>
+        </head>
+        <body>
+          ${emailContent}
+        </body>
+        </html>
+      `
+    } else {
+      // Simple HTML email without full structure
+      htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            * {
+              box-sizing: border-box;
+            }
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+              font-size: 14px;
+              line-height: 1.6;
+              color: #333;
+              padding: 16px;
+              margin: 0;
+              background: transparent;
+              word-wrap: break-word;
+              overflow-wrap: break-word;
+            }
+            img { 
+              max-width: 100% !important; 
+              height: auto !important;
+              display: block;
+            }
+            table { 
+              max-width: 100% !important; 
+              border-collapse: collapse;
+              table-layout: fixed;
+              width: 100% !important;
+            }
+            td, th {
+              word-wrap: break-word;
+              overflow-wrap: break-word;
+            }
+            a { 
+              color: #4f46e5; 
+              text-decoration: none;
+            }
+            a:hover { 
+              text-decoration: underline; 
+            }
+            pre, code {
+              white-space: pre-wrap;
+              word-wrap: break-word;
+              overflow-wrap: break-word;
+              max-width: 100%;
+            }
+            div, p, span {
+              max-width: 100% !important;
+            }
+          </style>
+        </head>
+        <body>
+          ${emailContent}
+        </body>
+        </html>
+      `
+    }
+
+    try {
+      iframeDoc.open()
+      iframeDoc.write(htmlContent)
+      iframeDoc.close()
+    } catch (e) {
+      console.error("Error writing to iframe:", e)
+      return
+    }
 
     // Update links to open in new tab
     const links = iframeDoc.querySelectorAll("a")
@@ -161,8 +284,13 @@ export function EmailContent({ body }: EmailContentProps) {
           ref={iframeRef}
           sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
           className="border-border min-h-[300px] w-full max-w-full rounded-lg border bg-white md:min-h-[400px] dark:bg-zinc-100"
-          style={{ minWidth: "100%", maxWidth: "100%" }}
+          style={{
+            minWidth: "100%",
+            maxWidth: "100%",
+            display: "block",
+          }}
           title="Email Content"
+          loading="lazy"
         />
       </div>
     )
