@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input.tsx"
 import { Button } from "@/components/ui/button.tsx"
 import { useStore } from "@nanostores/react"
 import { $address, $domainList, updateAddress } from "@/lib/store/store.ts"
-import { randomAddress } from "@/lib/utils.ts"
+import { randomAddress, randomUsername } from "@/lib/utils.ts"
 import { toast } from "sonner"
 import { HiOutlineExclamationCircle } from "react-icons/hi"
 import { FiRefreshCw } from "react-icons/fi"
@@ -66,12 +66,21 @@ function EditAddress({
     toast.success(t("changeNew") + " " + address)
   }
 
-  function onRandom() {
+  function onRandomUsername() {
+    if (!address || !address.includes("@")) {
+      toast.error("Please select a domain first")
+      return
+    }
+    const currentDomain = address.split("@")[1]
+    const newUsername = randomUsername()
+    setAddress(`${newUsername}@${currentDomain}`)
+  }
+
+  function onRandomAll() {
     if (domainList.length === 0) {
       toast.error("No domain available")
       return
     }
-    // Random domain selection
     const randomDomain =
       domainList[Math.floor(Math.random() * domainList.length)]
     const newAddress = randomAddress(randomDomain)
@@ -91,40 +100,58 @@ function EditAddress({
             <span>{t("editWarn")}</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="flex items-center gap-2 overflow-hidden">
-          <Input
-            className="h-9 min-w-[120px] flex-1 text-right font-mono text-sm sm:min-w-[200px]"
-            value={address?.split("@")[0]}
-            onChange={(e) => onInputChange(e.currentTarget.value)}
-            maxLength={64}
-            placeholder="username"
-          />
+        <div className="flex min-w-0 items-center gap-2 overflow-hidden">
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            <Input
+              className="h-9 min-w-0 flex-1 text-right font-mono text-sm"
+              value={address?.split("@")[0]}
+              onChange={(e) => onInputChange(e.currentTarget.value)}
+              maxLength={64}
+              placeholder="username"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="h-9 w-9 shrink-0"
+              onClick={onRandomUsername}
+              title="Random username only"
+            >
+              <FiRefreshCw className="size-4" />
+            </Button>
+          </div>
           <span className="bg-secondary flex h-9 shrink-0 items-center justify-center rounded-sm px-2 text-sm font-semibold">
             @
           </span>
-          <Select value={address?.split("@")[1]} onValueChange={onDomainChange}>
-            <SelectTrigger className="h-9 max-w-[200px] min-w-[120px] flex-1 text-sm sm:max-w-[300px] sm:min-w-[150px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {domainList.map((v) => (
-                <SelectItem key={v} value={v}>
-                  {v}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button
-            type="button"
-            variant="outline"
-            className="h-9 gap-1.5 px-3 text-sm"
-            onClick={onRandom}
-            title={t("random")}
-          >
-            <FiRefreshCw className="size-4" />
-          </Button>
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            <Select
+              value={address?.split("@")[1]}
+              onValueChange={onDomainChange}
+            >
+              <SelectTrigger className="h-9 min-w-0 flex-1 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {domainList.map((v) => (
+                  <SelectItem key={v} value={v}>
+                    {v}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="h-9 w-9 shrink-0"
+              onClick={onRandomAll}
+              title={t("random")}
+            >
+              <FiRefreshCw className="size-4" />
+            </Button>
+          </div>
         </div>
-        <AlertDialogFooter className="gap-2 sm:gap-0">
+        <AlertDialogFooter>
           <AlertDialogCancel className="h-9 text-sm">
             {t("cancel")}
           </AlertDialogCancel>

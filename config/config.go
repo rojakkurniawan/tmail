@@ -13,7 +13,6 @@ type Config struct {
 	BaseDir      string   `env:"BASE_DIR" envDefault:"fs"`
 	DB           Database `envPrefix:"DB_"`
 	Debug        bool     `env:"DEBUG"`
-	SwaggerHost  string   `env:"SWAGGER_HOST"`
 }
 
 type Database struct {

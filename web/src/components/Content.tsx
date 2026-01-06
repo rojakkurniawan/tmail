@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { HiOutlineClipboardCopy, HiOutlineMail } from "react-icons/hi"
 import { MdOutlineSentimentDissatisfied } from "react-icons/md"
 import { AiOutlineLoading3Quarters } from "react-icons/ai"
@@ -19,9 +19,15 @@ import { clsx } from "clsx"
 function Content({ lang }: { lang: string }) {
   const [latestId, setLatestId] = useState(-1)
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [envelopes, setEnvelopes] = useState<Envelope[]>([])
   const [selectedEmail, setSelectedEmail] = useState<Envelope | null>(null)
+  const [hasMore, setHasMore] = useState(true)
+  const [offset, setOffset] = useState(0)
   const controller = useRef<AbortController>(null)
+  const retryCount = useRef(0)
+  const isPollingActive = useRef(true)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   const address = useStore($address)
 
@@ -33,15 +39,24 @@ function Content({ lang }: { lang: string }) {
       .then((res) => initStore(res))
       .catch(fetchError)
 
-    return () => controller.current?.abort(ABORT_SAFE)
+    return () => {
+      isPollingActive.current = false
+      controller.current?.abort(ABORT_SAFE)
+    }
   }, [])
 
   useEffect(() => {
-    if (latestId < 0) {
+    if (latestId < 0 || !address) {
       return
     }
 
-    fetchLatest().catch(fetchError)
+    // Start polling when latestId is set
+    if (isPollingActive.current) {
+      fetchLatest().catch(() => {
+        // Error handling is done inside fetchLatest
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [latestId])
 
   useEffect(() => {
@@ -50,18 +65,26 @@ function Content({ lang }: { lang: string }) {
     }
     controller.current?.abort(ABORT_SAFE)
     controller.current = new AbortController()
+    retryCount.current = 0
+    isPollingActive.current = true
 
     setLoading(true)
     setEnvelopes([])
     setSelectedEmail(null) // Reset selected email when address changes
     setLatestId(-1)
+    setOffset(0)
+    setHasMore(true)
     fetchAll()
       .catch(fetchError)
       .finally(() => setLoading(false))
+
+    return () => {
+      isPollingActive.current = false
+    }
   }, [address])
 
   async function fetchAll() {
-    const res = await fetch("/api/fetch?to=" + address, {
+    const res = await fetch("/api/fetch?to=" + address + "&limit=50&offset=0", {
       signal: controller.current!.signal,
     })
     if (!res.ok) {
@@ -70,27 +93,165 @@ function Content({ lang }: { lang: string }) {
     }
     const list = await res.json()
     setEnvelopes(list)
+    setOffset(list.length)
+    setHasMore(list.length === 50)
     setLatestId(list.length > 0 ? list[0].id : 0)
   }
 
+  const fetchMore = useCallback(async () => {
+    if (loadingMore || !hasMore || !address) {
+      return
+    }
+
+    setLoadingMore(true)
+    try {
+      const currentOffset = offset
+      const res = await fetch(
+        `/api/fetch?to=${address}&limit=50&offset=${currentOffset}`,
+        {
+          signal: controller.current!.signal,
+        }
+      )
+      if (!res.ok) {
+        toast.error((await res.json()).message)
+        return
+      }
+      const list = await res.json()
+      if (list.length === 0) {
+        setHasMore(false)
+      } else {
+        setEnvelopes((prev) => [...prev, ...list])
+        setOffset((prev) => prev + list.length)
+        setHasMore(list.length === 50)
+      }
+    } catch (error: any) {
+      if (error === ABORT_SAFE || error.name === "AbortError") {
+        return
+      }
+      fetchError(error)
+    } finally {
+      setLoadingMore(false)
+    }
+  }, [address, offset, hasMore, loadingMore])
+
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container || !address) return
+
+    let isScrolling = false
+    const handleScroll = () => {
+      if (isScrolling || loadingMore || !hasMore) return
+
+      const { scrollTop, scrollHeight, clientHeight } = container
+      // Load more when user scrolls to 80% of the content
+      if (scrollTop + clientHeight >= scrollHeight * 0.8) {
+        isScrolling = true
+        fetchMore().finally(() => {
+          isScrolling = false
+        })
+      }
+    }
+
+    container.addEventListener("scroll", handleScroll)
+    return () => container.removeEventListener("scroll", handleScroll)
+  }, [address, hasMore, loadingMore, fetchMore])
+
   async function fetchLatest() {
-    const res = await fetch(`/api/fetch/latest?to=${address}&id=${latestId}`, {
-      signal: controller.current!.signal,
-    })
-    if (!res.ok) {
-      setTimeout(() => fetchLatest().catch(fetchError), 1000)
-      toast.error((await res.json()).message)
+    if (!isPollingActive.current || !address) {
       return
     }
-    if (res.status === 204) {
-      setTimeout(() => fetchLatest().catch(fetchError))
-      return
+
+    try {
+      // Create new AbortController for this request
+      controller.current = new AbortController()
+
+      const res = await fetch(
+        `/api/fetch/latest?to=${address}&id=${latestId}`,
+        {
+          signal: controller.current.signal,
+        }
+      )
+
+      if (!res.ok) {
+        // Reset retry count on successful connection (even if error response)
+        retryCount.current = 0
+
+        try {
+          const errorData = await res.json()
+          // Only show error toast for client errors (4xx), not server errors (5xx)
+          if (res.status >= 400 && res.status < 500) {
+            toast.error(errorData.message || "Request failed")
+          }
+        } catch {
+          // If response is not JSON, ignore
+        }
+
+        // Retry after 1 second
+        setTimeout(() => {
+          if (isPollingActive.current && address) {
+            fetchLatest().catch(() => {
+              // Error already handled in recursive call
+            })
+          }
+        }, 1000)
+        return
+      }
+
+      // Reset retry count on success
+      retryCount.current = 0
+
+      if (res.status === 204) {
+        // No new email, continue polling immediately
+        setTimeout(() => {
+          if (isPollingActive.current && address) {
+            fetchLatest().catch(() => {
+              // Error already handled in recursive call
+            })
+          }
+        }, 100)
+        return
+      }
+
+      const e = await res.json()
+      e.animate = true
+      setEnvelopes((prev) => [e, ...prev])
+      setLatestId(e.id)
+      toast.success(fmtString(t("receiveNew"), e.from))
+
+      // Continue polling for next email
+      setTimeout(() => {
+        if (isPollingActive.current && address) {
+          fetchLatest().catch(() => {
+            // Error already handled in recursive call
+          })
+        }
+      }, 100)
+    } catch (error: any) {
+      // Handle network errors, timeouts, and abort errors
+      if (error === ABORT_SAFE || error.name === "AbortError") {
+        return
+      }
+
+      // Increment retry count
+      retryCount.current += 1
+
+      // Exponential backoff: 1s, 2s, 4s, 8s, max 30s
+      const delay = Math.min(1000 * Math.pow(2, retryCount.current - 1), 30000)
+
+      // Only show error toast after multiple retries
+      if (retryCount.current === 3) {
+        toast.error("Connection lost. Retrying...")
+      }
+
+      // Retry with exponential backoff
+      setTimeout(() => {
+        if (isPollingActive.current && address) {
+          fetchLatest().catch(() => {
+            // Error already handled in recursive call
+          })
+        }
+      }, delay)
     }
-    const e = await res.json()
-    e.animate = true
-    setEnvelopes([e, ...envelopes])
-    setLatestId(e.id)
-    toast.success(fmtString(t("receiveNew"), e.from))
   }
 
   function copyToClipboard() {
@@ -143,7 +304,10 @@ function Content({ lang }: { lang: string }) {
             </div>
           </div>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <div
+          ref={scrollContainerRef}
+          className="min-h-0 flex-1 overflow-y-auto"
+        >
           {envelopes.length === 0 && (
             <div className="text-muted-foreground flex items-center justify-center gap-1 py-5.5">
               {loading ? (
@@ -187,6 +351,17 @@ function Content({ lang }: { lang: string }) {
               </div>
             </div>
           ))}
+          {loadingMore && (
+            <div className="text-muted-foreground flex items-center justify-center gap-1 py-4">
+              <FiRotateCw className="animate-spin" size={16} />
+              <span className="text-sm">{t("listLoading")}</span>
+            </div>
+          )}
+          {!hasMore && envelopes.length > 0 && (
+            <div className="text-muted-foreground flex items-center justify-center py-4 text-sm">
+              No more emails
+            </div>
+          )}
         </div>
       </div>
 

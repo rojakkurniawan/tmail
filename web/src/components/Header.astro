@@ -1,7 +1,5 @@
 ---
 import { useTranslations, type language } from "@/i18n/ui"
-import ToGithub from "@/components/ToGithub"
-import ToApiDocs from "@/components/ToApiDocs"
 import LanguageSwitcher from "@/components/LanguageSwitcher"
 import ThemeIcon from "./ThemeIcon"
 
@@ -15,8 +13,6 @@ const t = useTranslations(lang as language)
     <span class="mx-1 font-semibold">{t("title")}</span>
     <div class="flex-1"></div>
     <LanguageSwitcher currentLang={lang} client:load />
-    <ToApiDocs client:load />
     <ThemeIcon client:load />
-    <ToGithub client:load />
   </div>
 </header>

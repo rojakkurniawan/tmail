@@ -11,15 +11,6 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Report godoc
-// @Summary Report incoming email
-// @Description Internal endpoint - Used by Cloudflare Workers to report incoming emails. This endpoint receives raw email data in MIME format and stores it in the database.
-// @Tags Internal
-// @Accept */*
-// @Param to query string true "Recipient email address"
-// @Success 200 "Email successfully stored"
-// @Failure 400 "Failed to process email"
-// @Router /report [post]
 func Report(ctx *Context) error {
 	to := ctx.QueryParam("to")
 	if to == "" {

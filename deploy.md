@@ -1,61 +1,57 @@
-# 🧰 自建部署教程 (v2.0.0+)
+# 🧰 Self-Hosted Deployment Guide (v2.0.0+)
 
-## 邮件接收原理
+## Email Receiving Principle
 
-使用 Cloudflare 的邮件转发功能，将接收到的所有邮件通过 Workers 转发到本程序中。
+Use Cloudflare's email routing feature to forward all received emails to this program via Workers.
 
-**所以自建的邮箱域名必须使用 Cloudflare 进行 DNS 解析**
+**Therefore, the self-hosted email domain must use Cloudflare for DNS resolution**
 
-## 开启邮件转发 & 创建 Workers
+## Enable Email Routing & Create Workers
 
-- 首先开启邮件转发，按照官方流程来就行
+- First, enable email routing following the official process
 
-- 创建一个 Workers，模板随便选都可以
+- Create a Worker, you can choose any template
 
 ![workers-create](doc/workers-create.webp)
 
-创建好之后点击`Code editor`编辑代码，将[此处](doc/workers.js)的代码粘贴进去，需要将其中的域名`mail.sunls.de`替换为自己的，然后别忘记点击`Save and deploy`部署:
+After creation, click `Code editor` to edit the code, paste the code from [here](doc/workers.js), replace the domain `mail.sunls.de` with your own, and don't forget to click `Save and deploy` to deploy:
 
 ![workers-edit](doc/workers-edit.webp)
 
-- 然后需要添加一条`Catch-All`的规则，注意要选择`Send to a Worker`，如图:
+- Then you need to add a `Catch-All` rule, make sure to select `Send to a Worker`, as shown:
 
 ![email-routing.png](doc/email-routing.webp)
 
-## 环境变量配置
+## Environment Variables Configuration
 
-### 数据库配置
+### Database Configuration
 
-**目前仅支持 PostgreSQL**
+**Currently only PostgreSQL is supported**
 
-- `DB_HOST`: 数据库地址
-- `DB_PASS`: 数据库密码
-- `DB_NAME`: 数据库名称，默认`tmail`
+- `DB_HOST`: Database address
+- `DB_PASS`: Database password
+- `DB_NAME`: Database name, default is `tmail`
 
-### 必须
+### Required
 
-- `DOMAIN_LIST`: 支持的域名列表，使用`,`分割，例如: `isco.eu.org,chato.eu.org`
+- `DOMAIN_LIST`: List of supported domains, separated by `,`, for example: `isco.eu.org,chato.eu.org`
 
-### 非必须
+### Optional
 
-- `ADMIN_ADDRESS`: 管理员邮箱地址，可以查看所有邮件 (默认返回最新 100 条)
-- `HOST`: 服务监听地址，默认为`127.0.0.1`
-- `PORT`: 服务监听端口，默认为`3000`
-- `DEBUG`: 开启调试模式，默认为`false`
+- `ADMIN_ADDRESS`: Administrator email address, can view all emails (default returns latest 100)
+- `HOST`: Service listening address, default is `127.0.0.1`
+- `PORT`: Service listening port, default is `3000`
+- `DEBUG`: Enable debug mode, default is `false`
 
-### Swagger API 文档
+### Analytics
 
-- `SWAGGER_HOST`: Swagger 文档的主机地址，用于生产环境。例如: `mail.example.com`
+- `UMAMI_ID`: Umami analytics website-id
+- `UMAMI_URL`: Umami analytics script.js URL
+- `UMAMI_DOMAINS`: Umami analytics only runs on specific domains, comma-separated
 
-### 统计
+## Deployment
 
-- `UMAMI_ID`: Umami 统计的 website-id
-- `UMAMI_URL`: Umami 统计的 script.js 地址
-- `UMAMI_DOMAINS`: Umami 统计只在特定域名运行，逗号分割
-
-## 部署
-
-_请修改其中的环境变量配置_
+_Please modify the environment variable configuration accordingly_
 
 ### Docker
 
@@ -63,9 +59,9 @@ _请修改其中的环境变量配置_
 docker run --name tmail -d --restart unless-stopped -e 'DB_HOST=127.0.0.1' -e 'DB_PASS=postgres' -e 'HOST=0.0.0.0' -e 'DOMAIN_LIST=isco.eu.org,chato.eu.org' -p 3000:3000 sunls24/tmail
 ```
 
-### Docker Compose & Caddy (推荐)
+### Docker Compose & Caddy (Recommended)
 
-_如果不需要反向代理，需要设置`HOST=0.0.0.0`环境变量_
+_If you don't need a reverse proxy, you need to set the `HOST=0.0.0.0` environment variable_
 
 **docker-compose.yaml**
 

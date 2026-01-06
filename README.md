@@ -1,24 +1,24 @@
-## 📮 临时邮箱
+## 📮 Temporary Mail
 
-使用 Golang + Astro + React + Long Polling 实时获取邮件
+Using Golang + Astro + React + Long Polling to get emails in real-time
 
-- [x] 邮件 CSS 样式隔离
-- [x] 长轮训实时获取邮件
-- [x] 暗色主题和语言切换
-- [x] 支持查看和下载附件
+- [x] Email CSS style isolation
+- [x] Real-time email retrieval using long polling
+- [x] Dark theme and language switching
+- [x] Support for viewing and downloading attachments
 
-[English](README-en.md)
+[中文](README-zh.md)
 
-匿名的一次性邮箱，保护您的个人电子邮件地址免受垃圾邮件的骚扰。
+Anonymous disposable email to protect your personal email address from spam.
 
-[🧰 自建部署教程](deploy.md)
+[🧰 Self-Hosted Deployment Guide](deploy.md)
 
-## 🎉 可以做什么？
+## 🎉 What can it do?
 
-- 用于注册不想暴露自己真实邮件地址的网站，以避免垃圾邮件的骚扰。
-- 用于在同一个平台注册多个账号，而又不需要去注册多个邮箱。
+- Use for registering on websites where you don't want to expose your real email address, avoiding spam.
+- Use for creating multiple accounts on the same platform without needing multiple email addresses.
 
-## ⚠️ 注意
+## ⚠️ Warning
 
-- **❗接收到的邮件内容仅能保留10天**
-- **❗随机生成的邮箱地址任何人都可以使用，请勿用于注册重要账号**
+- **❗Received emails are only retained for 10 days**
+- **❗Randomly generated email addresses can be used by anyone, do not use for registering important accounts**

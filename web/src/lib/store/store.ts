@@ -16,7 +16,9 @@ export function initStore(domainList: string[]) {
   }
   const cfg = localStorage.getItem("config")
   if (!cfg) {
-    updateAddress(randomAddress(domainList[0]))
+    const randomDomain =
+      domainList[Math.floor(Math.random() * domainList.length)]
+    updateAddress(randomAddress(randomDomain))
   } else {
     const state = JSON.parse(cfg).state
     $history.set(state.history)

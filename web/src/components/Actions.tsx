@@ -30,7 +30,6 @@ function Actions({ lang, className }: { lang: string; className?: string }) {
       toast.error("No domain available")
       return
     }
-    // Random domain selection
     const randomDomain =
       domainList[Math.floor(Math.random() * domainList.length)]
     const newAddress = randomAddress(randomDomain)

@@ -26,13 +26,18 @@ function randomDigits(): string {
   return result
 }
 
-export function randomAddress(domain: string) {
+export function randomUsername(): string {
   const firstName = faker.person.firstName().toLowerCase()
   const lastName = faker.person.lastName().toLowerCase()
   const digits = randomDigits()
   const cleanFirst = firstName.replace(/[^a-z]/g, "")
   const cleanLast = lastName.replace(/[^a-z]/g, "")
-  return `${cleanFirst}${cleanLast}${digits}@${domain}`
+  return `${cleanFirst}${cleanLast}${digits}`
+}
+
+export function randomAddress(domain: string) {
+  const username = randomUsername()
+  return `${username}@${domain}`
 }
 
 export function fetchError(e: any) {

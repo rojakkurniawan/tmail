@@ -3,7 +3,6 @@ package schedule
 import (
 	"context"
 	"fmt"
-	"github.com/rs/zerolog/log"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -12,6 +11,8 @@ import (
 	"tmail/ent"
 	"tmail/ent/attachment"
 	"tmail/ent/envelope"
+
+	"github.com/rs/zerolog/log"
 )
 
 type Scheduler struct {
@@ -84,17 +85,14 @@ func removeEmptyDir(baseDir string) {
 }
 
 func run(fn func(), dur time.Duration) {
-	for {
-		select {
-		case <-time.Tick(dur):
-			go func() {
-				defer func() {
-					if err := recover(); err != nil {
-						log.Error().Msg(fmt.Sprint(err))
-					}
-				}()
-				fn()
+	for range time.Tick(dur) {
+		go func() {
+			defer func() {
+				if err := recover(); err != nil {
+					log.Error().Msg(fmt.Sprint(err))
+				}
 			}()
-		}
+			fn()
+		}()
 	}
 }

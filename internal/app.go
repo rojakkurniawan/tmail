@@ -12,7 +12,6 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"tmail/config"
-	"tmail/docs"
 	"tmail/ent"
 	"tmail/internal/api"
 	"tmail/internal/constant"
@@ -41,11 +40,6 @@ func (app App) Run() error {
 		zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	}
 
-	// Set Swagger host dynamically for production
-	if cfg.SwaggerHost != "" {
-		docs.SwaggerInfo.Host = cfg.SwaggerHost
-	}
-
 	client, err := ent.New(cfg.DB)
 	if err != nil {
 		return err
@@ -60,7 +54,6 @@ func (app App) Run() error {
 	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
 		DisablePrintStack: true,
 	}))
-	// CORS middleware - allows Swagger UI and other clients to access the API
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions},
