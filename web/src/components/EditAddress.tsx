@@ -100,6 +100,13 @@ function EditAddress({
             <span>{t("editWarn")}</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
+        {address && (
+          <div className="bg-secondary rounded-sm border p-3">
+            <div className="line-clamp-1 font-mono text-sm leading-relaxed break-all">
+              {address}
+            </div>
+          </div>
+        )}
         <div className="flex min-w-0 items-center gap-2 overflow-hidden">
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <Input
