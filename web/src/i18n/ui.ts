@@ -39,6 +39,12 @@ const ui = {
     from: "From",
     to: "To",
     date: "Date",
+    pasteEmail: "Paste full email address",
+    pasteEmailPlaceholder: "yourname@example.com",
+    selectDomain: "Select domain",
+    invalidEmailFormat: "Invalid email format",
+    unsupportedDomain: "Domain is not supported",
+    includeDigits: "Include random digits",
   },
   zh: {
     pageTitle: "临时邮箱 - 匿名的一次性邮箱",
@@ -71,6 +77,12 @@ const ui = {
     from: "发件人",
     to: "收件人",
     date: "日期",
+    pasteEmail: "粘贴完整邮箱地址",
+    pasteEmailPlaceholder: "yourname@example.com",
+    selectDomain: "选择域名",
+    invalidEmailFormat: "邮箱格式不正确",
+    unsupportedDomain: "不支持该域名",
+    includeDigits: "包含随机数字",
   },
   id: {
     pageTitle: "Email Sementara - Kotak Surat Anonim Sekali Pakai",
@@ -105,6 +117,12 @@ const ui = {
     from: "Dari",
     to: "Kepada",
     date: "Tanggal",
+    pasteEmail: "Tempel alamat email lengkap",
+    pasteEmailPlaceholder: "namamu@contoh.com",
+    selectDomain: "Pilih domain",
+    invalidEmailFormat: "Format email tidak valid",
+    unsupportedDomain: "Domain tidak didukung",
+    includeDigits: "Sertakan angka acak",
   },
 }
 

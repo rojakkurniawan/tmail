@@ -31,17 +31,20 @@ function randomDigits(): string {
   return result
 }
 
-export function randomUsername(): string {
+export function randomUsername(includeDigits: boolean = true): string {
   const firstName = faker.person.firstName().toLowerCase()
   const lastName = faker.person.lastName().toLowerCase()
-  const digits = randomDigits()
   const cleanFirst = firstName.replace(/[^a-z]/g, "")
   const cleanLast = lastName.replace(/[^a-z]/g, "")
+  if (!includeDigits) {
+    return `${cleanFirst}${cleanLast}`
+  }
+  const digits = randomDigits()
   return `${cleanFirst}${cleanLast}${digits}`
 }
 
-export function randomAddress(domain: string) {
-  const username = randomUsername()
+export function randomAddress(domain: string, includeDigits: boolean = true) {
+  const username = randomUsername(includeDigits)
   return `${username}@${domain}`
 }
 
