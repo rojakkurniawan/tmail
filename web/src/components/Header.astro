@@ -2,6 +2,8 @@
 import { useTranslations, type language } from "@/i18n/ui"
 import LanguageSwitcher from "@/components/LanguageSwitcher"
 import ThemeIcon from "./ThemeIcon"
+import { buttonVariants } from "@/components/ui/button"
+import { HiOutlineCode } from "react-icons/hi"
 
 const { lang } = Astro.props
 const t = useTranslations(lang as language)
@@ -12,6 +14,13 @@ const t = useTranslations(lang as language)
     <img alt="logo" src="/favicon.svg" class="h-6" />
     <span class="mx-1 font-semibold">{t("title")}</span>
     <div class="flex-1"></div>
+    <a
+      href="/api-docs"
+      title="API Docs"
+      class={buttonVariants({ variant: "ghost", size: "icon", className: "h-8 w-8 sm:h-9 sm:w-9" })}
+    >
+      <HiOutlineCode className="size-4 sm:size-[18px]" />
+    </a>
     <LanguageSwitcher currentLang={lang} client:load />
     <ThemeIcon client:load />
   </div>
